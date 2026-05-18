@@ -17,20 +17,13 @@
       --orange-soft: #efc18f;
       --line: rgba(255,255,255,.12);
       --green: #79dba4;
-      --red: #ff8f8f;
-      --yellow: #f4c86a;
-      --blue: #8ab4ff;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
       min-height: 100vh;
-      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-family: Inter, system-ui, sans-serif;
       background:
         radial-gradient(circle at top left, rgba(141,123,255,.16), transparent 28%),
         radial-gradient(circle at bottom right, rgba(213,141,75,.12), transparent 24%),
@@ -43,14 +36,9 @@
       line-height: 1.5;
     }
 
-    button {
-      font: inherit;
-      cursor: pointer;
-    }
+    button { font: inherit; cursor: pointer; }
 
-    .app {
-      width: min(820px, 100%);
-    }
+    .app { width: min(820px, 100%); }
 
     .shell {
       border-radius: 36px;
@@ -62,9 +50,7 @@
       overflow: hidden;
     }
 
-    .inner {
-      padding: 28px;
-    }
+    .inner { padding: 28px; }
 
     .eyebrow {
       color: var(--orange-soft);
@@ -90,15 +76,9 @@
       margin-bottom: 14px;
     }
 
-    h1 em {
-      color: var(--purple);
-      font-style: italic;
-    }
+    h1 em { color: var(--purple); font-style: italic; }
 
-    .subtitle {
-      color: var(--muted);
-      max-width: 560px;
-    }
+    .subtitle { color: var(--muted); max-width: 560px; }
 
     .timer {
       width: 112px;
@@ -144,10 +124,7 @@
       transition: transform .25s ease, opacity .25s ease;
     }
 
-    .card.slide {
-      transform: translateX(-110%) rotate(-8deg);
-      opacity: 0;
-    }
+    .card.slide { transform: translateX(-110%) rotate(-8deg); opacity: 0; }
 
     .card::before {
       content: "";
@@ -199,9 +176,7 @@
       transition: .2s ease;
     }
 
-    .btn:active {
-      transform: scale(.98);
-    }
+    .btn:active { transform: scale(.98); }
 
     .btn.primary {
       background: var(--paper);
@@ -231,11 +206,7 @@
       font-weight: 900;
     }
 
-    .current-card strong {
-      color: var(--text);
-      font-size: 1.15rem;
-      letter-spacing: -.04em;
-    }
+    .current-card strong { color: var(--text); font-size: 1.15rem; }
 
     .rating-panel {
       margin-top: 24px;
@@ -244,17 +215,9 @@
       background: rgba(255,255,255,.055);
       padding: 22px;
       display: none;
-      animation: fadeIn .25s ease;
     }
 
-    .rating-panel.show {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+    .rating-panel.show { display: block; }
 
     .rating-panel h3 {
       font-size: clamp(1.8rem, 7vw, 3rem);
@@ -280,9 +243,7 @@
       font-size: 1.05rem;
     }
 
-    .rating-btn.selected {
-      outline: 3px solid rgba(255,255,255,.4);
-    }
+    .rating-btn.selected { outline: 3px solid rgba(255,255,255,.4); }
 
     .bad { background: rgba(255,143,143,.16); border-color: rgba(255,143,143,.38); }
     .medium { background: rgba(244,200,106,.16); border-color: rgba(244,200,106,.38); }
@@ -295,9 +256,7 @@
       padding: 42px 14px;
     }
 
-    .final.show {
-      display: block;
-    }
+    .final.show { display: block; }
 
     .final h2 {
       font-size: clamp(3rem, 13vw, 5.8rem);
@@ -312,21 +271,21 @@
       margin: 0 auto 28px;
     }
 
-    .summary-grid {
+    .summary-grid, .card-list {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 10px;
       margin: 28px 0;
     }
 
-    .summary-card {
+    .summary-card, .mini-card {
       border-radius: 18px;
       border: 1px solid rgba(255,255,255,.12);
       background: rgba(255,255,255,.055);
       padding: 18px 12px;
     }
 
-    .summary-card span {
+    .summary-card span, .mini-card span {
       display: block;
       color: var(--muted);
       text-transform: uppercase;
@@ -336,81 +295,22 @@
       margin-bottom: 8px;
     }
 
-    .summary-card strong {
-      display: block;
-      font-size: 3rem;
-      line-height: .9;
-      letter-spacing: -.08em;
-    }
-
-    .card-list {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-bottom: 28px;
-    }
-
-    .mini-card {
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.045);
-      padding: 14px;
-    }
-
-    .mini-card span {
-      color: var(--muted);
-      display: block;
-      text-transform: uppercase;
-      letter-spacing: .14em;
-      font-size: .65rem;
-      font-weight: 900;
-      margin-bottom: 5px;
-    }
-
-    .mini-card strong {
-      font-size: 1.1rem;
-    }
+    .summary-card strong { display: block; font-size: 3rem; line-height: .9; }
+    .mini-card strong { font-size: 1.1rem; }
 
     @media (min-width: 720px) {
-      body {
-        padding: 28px;
-      }
-
-      .inner {
-        padding: 44px;
-      }
-
-      .controls {
-        grid-template-columns: 1fr 1fr 2fr;
-      }
-
-      .current-card {
-        grid-column: auto;
-      }
-
-      .rating-grid,
-      .summary-grid {
-        grid-template-columns: repeat(4, 1fr);
-      }
-
-      .card-list {
-        grid-template-columns: repeat(3, 1fr);
-      }
+      body { padding: 28px; }
+      .inner { padding: 44px; }
+      .controls { grid-template-columns: 1fr 1fr 2fr; }
+      .current-card { grid-column: auto; }
+      .rating-grid, .summary-grid { grid-template-columns: repeat(4, 1fr); }
+      .card-list { grid-template-columns: repeat(3, 1fr); }
     }
 
     @media (max-width: 520px) {
-      .top {
-        grid-template-columns: 1fr;
-      }
-
-      .timer {
-        width: 96px;
-        height: 96px;
-      }
-
-      .timer strong {
-        font-size: 3rem;
-      }
+      .top { grid-template-columns: 1fr; }
+      .timer { width: 96px; height: 96px; }
+      .timer strong { font-size: 3rem; }
     }
   </style>
 </head>
@@ -418,7 +318,7 @@
 <body>
   <main class="app">
     <section class="shell">
-      <div class="inner" id="gameScreen">
+      <div class="inner">
         <div class="eyebrow">Client Panic Mode ✦ Photographer English</div>
 
         <div id="gameContent">
@@ -442,9 +342,7 @@
             <p id="situationText">The couple is nervous. What do you say?</p>
           </div>
 
-          <div class="controls" id="controls">
-            <button class="btn primary" id="startBtn" onclick="startRound()">START ROUND</button>
-          </div>
+          <div class="controls" id="controls"></div>
 
           <div class="rating-panel" id="ratingPanel">
             <div class="eyebrow">Teacher Evaluation</div>
@@ -465,10 +363,8 @@
           <div class="eyebrow">Session Finished</div>
           <h2 id="finalLevel">Functional</h2>
           <p>Paulo reacted to real photography situations under pressure.</p>
-
           <div class="summary-grid" id="summaryGrid"></div>
           <div class="card-list" id="cardList"></div>
-
           <button class="btn primary" onclick="resetGame()">PLAY AGAIN ✦</button>
         </div>
       </div>
@@ -478,10 +374,10 @@
   <script>
     const situations = [
       { title: "Nervous Couple", text: "The couple is nervous. What do you say?" },
-      { title: "Awkward Groom", text: "The groom doesn’t know how to pose. Give him directions." },
+      { title: "Awkward Groom", text: "The groom does not know how to pose. Give him directions." },
       { title: "Crying Bride", text: "The bride is crying. What do you say?" },
       { title: "Awkward Couple", text: "The couple looks awkward. Help them feel natural." },
-      { title: "Distracted Child", text: "The child won’t look at the camera. What do you say?" },
+      { title: "Distracted Child", text: "The child will not look at the camera. What do you say?" },
       { title: "Loud Family", text: "The family is talking too much. Take control politely." },
       { title: "Perfect Light", text: "The light is perfect. Direct the couple quickly." },
       { title: "Shy Husband", text: "The husband is shy. Help him relax." },
@@ -534,10 +430,8 @@
 
     function startTimer() {
       clearInterval(timer);
-
       timer = setInterval(() => {
         if (paused) return;
-
         timeLeft--;
         document.getElementById("timeLeft").textContent = timeLeft;
 
@@ -656,7 +550,6 @@
       current = 0;
       results = [];
       currentRating = null;
-
       document.getElementById("gameContent").style.display = "block";
       document.getElementById("finalScreen").classList.remove("show");
       hideRating();
