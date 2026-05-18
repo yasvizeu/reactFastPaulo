@@ -1,0 +1,326 @@
+import React from "react";
+
+export default function PauloClientPanicMode() {
+  const situations = [
+    {
+      title: "Nervous Couple",
+      text: "The couple is nervous. What do you say?"
+    },
+    {
+      title: "Awkward Groom",
+      text: "The groom doesn’t know how to pose. Give him directions."
+    },
+    {
+      title: "Crying Bride",
+      text: "The bride is crying. What do you say?"
+    },
+    {
+      title: "Awkward Couple",
+      text: "The couple looks awkward. Help them feel natural."
+    },
+    {
+      title: "Distracted Child",
+      text: "The child won’t look at the camera. What do you say?"
+    },
+    {
+      title: "Loud Family",
+      text: "The family is talking too much. Take control politely."
+    },
+    {
+      title: "Perfect Light",
+      text: "The light is perfect. Direct the couple quickly."
+    },
+    {
+      title: "Shy Husband",
+      text: "The husband is shy. Help him relax."
+    },
+    {
+      title: "Romantic Pictures",
+      text: "The couple wants romantic pictures. Direct them."
+    }
+  ];
+
+  const [started, setStarted] = React.useState(false);
+  const [paused, setPaused] = React.useState(false);
+  const [timeLeft, setTimeLeft] = React.useState(10);
+  const [current, setCurrent] = React.useState(0);
+  const [showRating, setShowRating] = React.useState(false);
+  const [finished, setFinished] = React.useState(false);
+  const [results, setResults] = React.useState([]);
+
+  React.useEffect(() => {
+    if (!started || paused || showRating || finished) return;
+
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          setShowRating(true);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [started, paused, showRating, finished, current]);
+
+  const startRound = () => {
+    setStarted(true);
+    setPaused(false);
+    setShowRating(false);
+    setTimeLeft(10);
+  };
+
+  const handleRating = (rating) => {
+    setResults((prev) => [...prev, rating]);
+  };
+
+  const nextCard = () => {
+    if (current === situations.length - 1) {
+      setFinished(true);
+      return;
+    }
+
+    setCurrent((prev) => prev + 1);
+    setShowRating(false);
+    setTimeLeft(10);
+    setPaused(false);
+  };
+
+  const resetGame = () => {
+    setStarted(false);
+    setPaused(false);
+    setTimeLeft(10);
+    setCurrent(0);
+    setShowRating(false);
+    setFinished(false);
+    setResults([]);
+  };
+
+  const averageLevel = () => {
+    const map = {
+      Bad: 1,
+      Medium: 2,
+      Good: 3,
+      Great: 4
+    };
+
+    const avg =
+      results.reduce((acc, item) => acc + map[item], 0) /
+      (results.length || 1);
+
+    if (avg < 1.8) return "Survival Mode";
+    if (avg < 2.7) return "Functional";
+    if (avg < 3.5) return "Natural";
+    return "Professional";
+  };
+
+  const ratingSummary = () => {
+    return {
+      Bad: results.filter((item) => item === "Bad").length,
+      Medium: results.filter((item) => item === "Medium").length,
+      Good: results.filter((item) => item === "Good").length,
+      Great: results.filter((item) => item === "Great").length
+    };
+  };
+
+  return (
+    <div className="min-h-screen bg-[#050018] text-[#f5f5f7] px-4 py-6 flex items-center justify-center">
+      <div className="w-full max-w-3xl">
+        <div className="rounded-[36px] border border-white/10 bg-gradient-to-br from-white/10 to-white/[0.03] overflow-hidden shadow-2xl">
+          <div className="p-8 md:p-12">
+            <div className="uppercase tracking-[0.25em] text-[11px] font-black text-[#efc18f] mb-5">
+              Client Panic Mode ✦ Photographer English
+            </div>
+
+            {!finished ? (
+              <>
+                <div className="flex items-center justify-between gap-4 mb-8">
+                  <div>
+                    <h1 className="text-5xl md:text-7xl font-black tracking-[-0.08em] leading-none">
+                      React <span className="italic text-[#8d7bff]">Fast</span>
+                    </h1>
+
+                    <p className="text-[#cbc3e7] mt-4 max-w-xl">
+                      Paulo has 10 seconds to react naturally like a real photographer.
+                    </p>
+                  </div>
+
+                  <div className="flex flex-col items-center justify-center w-28 h-28 rounded-full border border-white/10 bg-black/20 shrink-0">
+                    <span className="text-5xl font-black tracking-[-0.08em]">
+                      {timeLeft}
+                    </span>
+                    <span className="text-xs uppercase tracking-[0.2em] text-[#cbc3e7] mt-1">
+                      seconds
+                    </span>
+                  </div>
+                </div>
+
+                <div className="rounded-[30px] bg-[#f6f2ea] text-[#241942] p-8 shadow-xl relative overflow-hidden">
+                  <div className="absolute top-4 right-6 w-16 h-4 bg-[#d58d4b]/30 rounded rotate-6" />
+
+                  <div className="uppercase tracking-[0.2em] text-[11px] font-black text-[#7a5cd8] mb-5">
+                    Situation {current + 1} of {situations.length}
+                  </div>
+
+                  <h2 className="text-3xl md:text-5xl font-black tracking-[-0.07em] leading-none mb-6">
+                    {situations[current].title}
+                  </h2>
+
+                  <p className="text-lg md:text-2xl leading-relaxed font-medium text-[#3f2d65]">
+                    {situations[current].text}
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
+                  {!started ? (
+                    <button
+                      onClick={startRound}
+                      className="col-span-2 md:col-span-4 rounded-2xl bg-[#f6f2ea] text-[#1c1038] py-4 font-black text-lg active:scale-[0.98] transition"
+                    >
+                      START ROUND
+                    </button>
+                  ) : (
+                    <>
+                      <button
+                        onClick={() => setPaused((prev) => !prev)}
+                        className="rounded-2xl border border-white/10 bg-white/5 py-4 font-black active:scale-[0.98] transition"
+                      >
+                        {paused ? "RESUME" : "PAUSE"}
+                      </button>
+
+                      <button
+                        onClick={() => {
+                          setTimeLeft(10);
+                          setPaused(false);
+                          setShowRating(false);
+                        }}
+                        className="rounded-2xl border border-white/10 bg-white/5 py-4 font-black active:scale-[0.98] transition"
+                      >
+                        RESTART TIMER
+                      </button>
+
+                      <div className="col-span-2 rounded-2xl border border-white/10 bg-white/5 py-4 px-5 flex items-center justify-between">
+                        <span className="text-[#cbc3e7] uppercase tracking-[0.15em] text-xs font-black">
+                          Current Card
+                        </span>
+
+                        <span className="font-black text-xl tracking-[-0.06em]">
+                          {current + 1}/{situations.length}
+                        </span>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {showRating && (
+                  <div className="mt-8 rounded-[30px] border border-white/10 bg-white/5 p-6 animate-in fade-in duration-300">
+                    <div className="uppercase tracking-[0.2em] text-[11px] font-black text-[#efc18f] mb-4">
+                      Teacher Evaluation
+                    </div>
+
+                    <h3 className="text-3xl font-black tracking-[-0.07em] mb-6">
+                      How was the response?
+                    </h3>
+
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+                      {[
+                        {
+                          label: "Bad",
+                          color: "bg-red-400/20 border-red-400/40"
+                        },
+                        {
+                          label: "Medium",
+                          color: "bg-yellow-400/20 border-yellow-400/40"
+                        },
+                        {
+                          label: "Good",
+                          color: "bg-blue-400/20 border-blue-400/40"
+                        },
+                        {
+                          label: "Great",
+                          color: "bg-green-400/20 border-green-400/40"
+                        }
+                      ].map((item) => (
+                        <button
+                          key={item.label}
+                          onClick={() => handleRating(item.label)}
+                          className={`rounded-2xl border py-5 font-black text-lg transition active:scale-[0.98] ${item.color}`}
+                        >
+                          {item.label}
+                        </button>
+                      ))}
+                    </div>
+
+                    <button
+                      onClick={nextCard}
+                      className="w-full rounded-2xl bg-[#f6f2ea] text-[#1c1038] py-4 font-black text-lg active:scale-[0.98] transition"
+                    >
+                      NEXT CARD →
+                    </button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <div className="text-center py-10">
+                <div className="uppercase tracking-[0.25em] text-[11px] font-black text-[#efc18f] mb-5">
+                  Session Finished
+                </div>
+
+                <h2 className="text-6xl md:text-8xl font-black tracking-[-0.08em] leading-none mb-6">
+                  {averageLevel()}
+                </h2>
+
+                <p className="text-[#cbc3e7] max-w-xl mx-auto text-lg mb-10">
+                  Paulo reacted to real photography situations under pressure.
+                </p>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
+                  {Object.entries(ratingSummary()).map(([label, count]) => (
+                    <div
+                      key={label}
+                      className="rounded-2xl border border-white/10 bg-white/5 py-5"
+                    >
+                      <div className="text-xs uppercase tracking-[0.2em] text-[#cbc3e7] mb-2">
+                        {label}
+                      </div>
+
+                      <div className="text-5xl font-black tracking-[-0.08em]">
+                        {count}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-10">
+                  {results.map((item, index) => (
+                    <div
+                      key={index}
+                      className="rounded-2xl border border-white/10 bg-white/5 py-4"
+                    >
+                      <div className="text-xs uppercase tracking-[0.2em] text-[#cbc3e7] mb-2">
+                        Card {index + 1}
+                      </div>
+
+                      <div className="text-xl font-black tracking-[-0.06em]">
+                        {item}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <button
+                  onClick={resetGame}
+                  className="rounded-2xl bg-[#f6f2ea] text-[#1c1038] py-4 px-8 font-black text-lg active:scale-[0.98] transition"
+                >
+                  PLAY AGAIN ✦
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
