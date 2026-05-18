@@ -1,326 +1,671 @@
-import React from "react";
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Paulo · Client Panic Mode</title>
 
-export default function PauloClientPanicMode() {
-  const situations = [
-    {
-      title: "Nervous Couple",
-      text: "The couple is nervous. What do you say?"
-    },
-    {
-      title: "Awkward Groom",
-      text: "The groom doesn’t know how to pose. Give him directions."
-    },
-    {
-      title: "Crying Bride",
-      text: "The bride is crying. What do you say?"
-    },
-    {
-      title: "Awkward Couple",
-      text: "The couple looks awkward. Help them feel natural."
-    },
-    {
-      title: "Distracted Child",
-      text: "The child won’t look at the camera. What do you say?"
-    },
-    {
-      title: "Loud Family",
-      text: "The family is talking too much. Take control politely."
-    },
-    {
-      title: "Perfect Light",
-      text: "The light is perfect. Direct the couple quickly."
-    },
-    {
-      title: "Shy Husband",
-      text: "The husband is shy. Help him relax."
-    },
-    {
-      title: "Romantic Pictures",
-      text: "The couple wants romantic pictures. Direct them."
-    }
-  ];
-
-  const [started, setStarted] = React.useState(false);
-  const [paused, setPaused] = React.useState(false);
-  const [timeLeft, setTimeLeft] = React.useState(10);
-  const [current, setCurrent] = React.useState(0);
-  const [showRating, setShowRating] = React.useState(false);
-  const [finished, setFinished] = React.useState(false);
-  const [results, setResults] = React.useState([]);
-
-  React.useEffect(() => {
-    if (!started || paused || showRating || finished) return;
-
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          setShowRating(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [started, paused, showRating, finished, current]);
-
-  const startRound = () => {
-    setStarted(true);
-    setPaused(false);
-    setShowRating(false);
-    setTimeLeft(10);
-  };
-
-  const handleRating = (rating) => {
-    setResults((prev) => [...prev, rating]);
-  };
-
-  const nextCard = () => {
-    if (current === situations.length - 1) {
-      setFinished(true);
-      return;
+  <style>
+    :root {
+      --bg: #050018;
+      --bg2: #12052c;
+      --paper: #f6f2ea;
+      --text: #f5f5f7;
+      --muted: #cbc3e7;
+      --purple: #8d7bff;
+      --orange: #d58d4b;
+      --orange-soft: #efc18f;
+      --line: rgba(255,255,255,.12);
+      --green: #79dba4;
+      --red: #ff8f8f;
+      --yellow: #f4c86a;
+      --blue: #8ab4ff;
     }
 
-    setCurrent((prev) => prev + 1);
-    setShowRating(false);
-    setTimeLeft(10);
-    setPaused(false);
-  };
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-  const resetGame = () => {
-    setStarted(false);
-    setPaused(false);
-    setTimeLeft(10);
-    setCurrent(0);
-    setShowRating(false);
-    setFinished(false);
-    setResults([]);
-  };
+    body {
+      min-height: 100vh;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(141,123,255,.16), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(213,141,75,.12), transparent 24%),
+        linear-gradient(145deg, var(--bg), var(--bg2));
+      color: var(--text);
+      padding: 18px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.5;
+    }
 
-  const averageLevel = () => {
-    const map = {
-      Bad: 1,
-      Medium: 2,
-      Good: 3,
-      Great: 4
-    };
+    button {
+      font: inherit;
+      cursor: pointer;
+    }
 
-    const avg =
-      results.reduce((acc, item) => acc + map[item], 0) /
-      (results.length || 1);
+    .app {
+      width: min(820px, 100%);
+    }
 
-    if (avg < 1.8) return "Survival Mode";
-    if (avg < 2.7) return "Functional";
-    if (avg < 3.5) return "Natural";
-    return "Professional";
-  };
+    .shell {
+      border-radius: 36px;
+      border: 1px solid var(--line);
+      background:
+        radial-gradient(circle at 85% 0%, rgba(213,141,75,.18), transparent 34%),
+        linear-gradient(145deg, rgba(255,255,255,.10), rgba(255,255,255,.035));
+      box-shadow: 0 24px 70px rgba(0,0,0,.28);
+      overflow: hidden;
+    }
 
-  const ratingSummary = () => {
-    return {
-      Bad: results.filter((item) => item === "Bad").length,
-      Medium: results.filter((item) => item === "Medium").length,
-      Good: results.filter((item) => item === "Good").length,
-      Great: results.filter((item) => item === "Great").length
-    };
-  };
+    .inner {
+      padding: 28px;
+    }
 
-  return (
-    <div className="min-h-screen bg-[#050018] text-[#f5f5f7] px-4 py-6 flex items-center justify-center">
-      <div className="w-full max-w-3xl">
-        <div className="rounded-[36px] border border-white/10 bg-gradient-to-br from-white/10 to-white/[0.03] overflow-hidden shadow-2xl">
-          <div className="p-8 md:p-12">
-            <div className="uppercase tracking-[0.25em] text-[11px] font-black text-[#efc18f] mb-5">
-              Client Panic Mode ✦ Photographer English
+    .eyebrow {
+      color: var(--orange-soft);
+      text-transform: uppercase;
+      letter-spacing: .22em;
+      font-size: .72rem;
+      font-weight: 950;
+      margin-bottom: 20px;
+    }
+
+    .top {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    h1 {
+      font-size: clamp(3rem, 13vw, 5.4rem);
+      line-height: .9;
+      letter-spacing: -.08em;
+      margin-bottom: 14px;
+    }
+
+    h1 em {
+      color: var(--purple);
+      font-style: italic;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      max-width: 560px;
+    }
+
+    .timer {
+      width: 112px;
+      height: 112px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.20);
+      display: grid;
+      place-items: center;
+      text-align: center;
+      flex-shrink: 0;
+    }
+
+    .timer strong {
+      display: block;
+      font-size: 3.4rem;
+      line-height: .8;
+      letter-spacing: -.08em;
+    }
+
+    .timer span {
+      display: block;
+      color: var(--muted);
+      font-size: .68rem;
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      margin-top: 8px;
+      font-weight: 900;
+    }
+
+    .card {
+      position: relative;
+      overflow: hidden;
+      background: var(--paper);
+      color: #241942;
+      border-radius: 30px;
+      padding: 30px 24px;
+      box-shadow: 0 18px 44px rgba(0,0,0,.22);
+      min-height: 230px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      transition: transform .25s ease, opacity .25s ease;
+    }
+
+    .card.slide {
+      transform: translateX(-110%) rotate(-8deg);
+      opacity: 0;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      width: 72px;
+      height: 18px;
+      background: rgba(213,141,75,.25);
+      right: 26px;
+      top: 14px;
+      border-radius: 4px;
+      transform: rotate(5deg);
+    }
+
+    .situation-count {
+      color: #6d4bd3;
+      text-transform: uppercase;
+      letter-spacing: .18em;
+      font-size: .72rem;
+      font-weight: 950;
+      margin-bottom: 18px;
+    }
+
+    .card h2 {
+      font-size: clamp(2.2rem, 9vw, 4rem);
+      line-height: .95;
+      letter-spacing: -.07em;
+      margin-bottom: 18px;
+    }
+
+    .card p {
+      font-size: clamp(1.15rem, 4vw, 1.7rem);
+      line-height: 1.45;
+      color: #3f2d65;
+      font-weight: 700;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      border: none;
+      border-radius: 18px;
+      padding: 15px 14px;
+      font-weight: 950;
+      transition: .2s ease;
+    }
+
+    .btn:active {
+      transform: scale(.98);
+    }
+
+    .btn.primary {
+      background: var(--paper);
+      color: #1c1038;
+      grid-column: 1 / -1;
+    }
+
+    .btn.secondary {
+      background: rgba(255,255,255,.06);
+      color: var(--text);
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
+    .current-card {
+      grid-column: 1 / -1;
+      border-radius: 18px;
+      padding: 14px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.06);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--muted);
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      font-weight: 900;
+    }
+
+    .current-card strong {
+      color: var(--text);
+      font-size: 1.15rem;
+      letter-spacing: -.04em;
+    }
+
+    .rating-panel {
+      margin-top: 24px;
+      border-radius: 30px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.055);
+      padding: 22px;
+      display: none;
+      animation: fadeIn .25s ease;
+    }
+
+    .rating-panel.show {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .rating-panel h3 {
+      font-size: clamp(1.8rem, 7vw, 3rem);
+      line-height: 1;
+      letter-spacing: -.07em;
+      margin-bottom: 18px;
+    }
+
+    .rating-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .rating-btn {
+      border-radius: 18px;
+      padding: 18px 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      color: var(--text);
+      background: rgba(255,255,255,.06);
+      font-weight: 950;
+      font-size: 1.05rem;
+    }
+
+    .rating-btn.selected {
+      outline: 3px solid rgba(255,255,255,.4);
+    }
+
+    .bad { background: rgba(255,143,143,.16); border-color: rgba(255,143,143,.38); }
+    .medium { background: rgba(244,200,106,.16); border-color: rgba(244,200,106,.38); }
+    .good { background: rgba(138,180,255,.16); border-color: rgba(138,180,255,.38); }
+    .great { background: rgba(121,219,164,.16); border-color: rgba(121,219,164,.38); }
+
+    .final {
+      display: none;
+      text-align: center;
+      padding: 42px 14px;
+    }
+
+    .final.show {
+      display: block;
+    }
+
+    .final h2 {
+      font-size: clamp(3rem, 13vw, 5.8rem);
+      line-height: .9;
+      letter-spacing: -.08em;
+      margin-bottom: 14px;
+    }
+
+    .final p {
+      color: var(--muted);
+      max-width: 560px;
+      margin: 0 auto 28px;
+    }
+
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin: 28px 0;
+    }
+
+    .summary-card {
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(255,255,255,.055);
+      padding: 18px 12px;
+    }
+
+    .summary-card span {
+      display: block;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: .16em;
+      font-size: .68rem;
+      font-weight: 900;
+      margin-bottom: 8px;
+    }
+
+    .summary-card strong {
+      display: block;
+      font-size: 3rem;
+      line-height: .9;
+      letter-spacing: -.08em;
+    }
+
+    .card-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 28px;
+    }
+
+    .mini-card {
+      border-radius: 16px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.045);
+      padding: 14px;
+    }
+
+    .mini-card span {
+      color: var(--muted);
+      display: block;
+      text-transform: uppercase;
+      letter-spacing: .14em;
+      font-size: .65rem;
+      font-weight: 900;
+      margin-bottom: 5px;
+    }
+
+    .mini-card strong {
+      font-size: 1.1rem;
+    }
+
+    @media (min-width: 720px) {
+      body {
+        padding: 28px;
+      }
+
+      .inner {
+        padding: 44px;
+      }
+
+      .controls {
+        grid-template-columns: 1fr 1fr 2fr;
+      }
+
+      .current-card {
+        grid-column: auto;
+      }
+
+      .rating-grid,
+      .summary-grid {
+        grid-template-columns: repeat(4, 1fr);
+      }
+
+      .card-list {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 520px) {
+      .top {
+        grid-template-columns: 1fr;
+      }
+
+      .timer {
+        width: 96px;
+        height: 96px;
+      }
+
+      .timer strong {
+        font-size: 3rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app">
+    <section class="shell">
+      <div class="inner" id="gameScreen">
+        <div class="eyebrow">Client Panic Mode ✦ Photographer English</div>
+
+        <div id="gameContent">
+          <div class="top">
+            <div>
+              <h1>React <em>Fast</em></h1>
+              <p class="subtitle">Paulo has 10 seconds to react naturally like a real photographer.</p>
             </div>
 
-            {!finished ? (
-              <>
-                <div className="flex items-center justify-between gap-4 mb-8">
-                  <div>
-                    <h1 className="text-5xl md:text-7xl font-black tracking-[-0.08em] leading-none">
-                      React <span className="italic text-[#8d7bff]">Fast</span>
-                    </h1>
-
-                    <p className="text-[#cbc3e7] mt-4 max-w-xl">
-                      Paulo has 10 seconds to react naturally like a real photographer.
-                    </p>
-                  </div>
-
-                  <div className="flex flex-col items-center justify-center w-28 h-28 rounded-full border border-white/10 bg-black/20 shrink-0">
-                    <span className="text-5xl font-black tracking-[-0.08em]">
-                      {timeLeft}
-                    </span>
-                    <span className="text-xs uppercase tracking-[0.2em] text-[#cbc3e7] mt-1">
-                      seconds
-                    </span>
-                  </div>
-                </div>
-
-                <div className="rounded-[30px] bg-[#f6f2ea] text-[#241942] p-8 shadow-xl relative overflow-hidden">
-                  <div className="absolute top-4 right-6 w-16 h-4 bg-[#d58d4b]/30 rounded rotate-6" />
-
-                  <div className="uppercase tracking-[0.2em] text-[11px] font-black text-[#7a5cd8] mb-5">
-                    Situation {current + 1} of {situations.length}
-                  </div>
-
-                  <h2 className="text-3xl md:text-5xl font-black tracking-[-0.07em] leading-none mb-6">
-                    {situations[current].title}
-                  </h2>
-
-                  <p className="text-lg md:text-2xl leading-relaxed font-medium text-[#3f2d65]">
-                    {situations[current].text}
-                  </p>
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mt-6">
-                  {!started ? (
-                    <button
-                      onClick={startRound}
-                      className="col-span-2 md:col-span-4 rounded-2xl bg-[#f6f2ea] text-[#1c1038] py-4 font-black text-lg active:scale-[0.98] transition"
-                    >
-                      START ROUND
-                    </button>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => setPaused((prev) => !prev)}
-                        className="rounded-2xl border border-white/10 bg-white/5 py-4 font-black active:scale-[0.98] transition"
-                      >
-                        {paused ? "RESUME" : "PAUSE"}
-                      </button>
-
-                      <button
-                        onClick={() => {
-                          setTimeLeft(10);
-                          setPaused(false);
-                          setShowRating(false);
-                        }}
-                        className="rounded-2xl border border-white/10 bg-white/5 py-4 font-black active:scale-[0.98] transition"
-                      >
-                        RESTART TIMER
-                      </button>
-
-                      <div className="col-span-2 rounded-2xl border border-white/10 bg-white/5 py-4 px-5 flex items-center justify-between">
-                        <span className="text-[#cbc3e7] uppercase tracking-[0.15em] text-xs font-black">
-                          Current Card
-                        </span>
-
-                        <span className="font-black text-xl tracking-[-0.06em]">
-                          {current + 1}/{situations.length}
-                        </span>
-                      </div>
-                    </>
-                  )}
-                </div>
-
-                {showRating && (
-                  <div className="mt-8 rounded-[30px] border border-white/10 bg-white/5 p-6 animate-in fade-in duration-300">
-                    <div className="uppercase tracking-[0.2em] text-[11px] font-black text-[#efc18f] mb-4">
-                      Teacher Evaluation
-                    </div>
-
-                    <h3 className="text-3xl font-black tracking-[-0.07em] mb-6">
-                      How was the response?
-                    </h3>
-
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
-                      {[
-                        {
-                          label: "Bad",
-                          color: "bg-red-400/20 border-red-400/40"
-                        },
-                        {
-                          label: "Medium",
-                          color: "bg-yellow-400/20 border-yellow-400/40"
-                        },
-                        {
-                          label: "Good",
-                          color: "bg-blue-400/20 border-blue-400/40"
-                        },
-                        {
-                          label: "Great",
-                          color: "bg-green-400/20 border-green-400/40"
-                        }
-                      ].map((item) => (
-                        <button
-                          key={item.label}
-                          onClick={() => handleRating(item.label)}
-                          className={`rounded-2xl border py-5 font-black text-lg transition active:scale-[0.98] ${item.color}`}
-                        >
-                          {item.label}
-                        </button>
-                      ))}
-                    </div>
-
-                    <button
-                      onClick={nextCard}
-                      className="w-full rounded-2xl bg-[#f6f2ea] text-[#1c1038] py-4 font-black text-lg active:scale-[0.98] transition"
-                    >
-                      NEXT CARD →
-                    </button>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className="text-center py-10">
-                <div className="uppercase tracking-[0.25em] text-[11px] font-black text-[#efc18f] mb-5">
-                  Session Finished
-                </div>
-
-                <h2 className="text-6xl md:text-8xl font-black tracking-[-0.08em] leading-none mb-6">
-                  {averageLevel()}
-                </h2>
-
-                <p className="text-[#cbc3e7] max-w-xl mx-auto text-lg mb-10">
-                  Paulo reacted to real photography situations under pressure.
-                </p>
-
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-10">
-                  {Object.entries(ratingSummary()).map(([label, count]) => (
-                    <div
-                      key={label}
-                      className="rounded-2xl border border-white/10 bg-white/5 py-5"
-                    >
-                      <div className="text-xs uppercase tracking-[0.2em] text-[#cbc3e7] mb-2">
-                        {label}
-                      </div>
-
-                      <div className="text-5xl font-black tracking-[-0.08em]">
-                        {count}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-10">
-                  {results.map((item, index) => (
-                    <div
-                      key={index}
-                      className="rounded-2xl border border-white/10 bg-white/5 py-4"
-                    >
-                      <div className="text-xs uppercase tracking-[0.2em] text-[#cbc3e7] mb-2">
-                        Card {index + 1}
-                      </div>
-
-                      <div className="text-xl font-black tracking-[-0.06em]">
-                        {item}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                <button
-                  onClick={resetGame}
-                  className="rounded-2xl bg-[#f6f2ea] text-[#1c1038] py-4 px-8 font-black text-lg active:scale-[0.98] transition"
-                >
-                  PLAY AGAIN ✦
-                </button>
+            <div class="timer">
+              <div>
+                <strong id="timeLeft">10</strong>
+                <span>seconds</span>
               </div>
-            )}
+            </div>
+          </div>
+
+          <div class="card" id="situationCard">
+            <div class="situation-count" id="situationCount">Situation 1 of 9</div>
+            <h2 id="situationTitle">Nervous Couple</h2>
+            <p id="situationText">The couple is nervous. What do you say?</p>
+          </div>
+
+          <div class="controls" id="controls">
+            <button class="btn primary" id="startBtn" onclick="startRound()">START ROUND</button>
+          </div>
+
+          <div class="rating-panel" id="ratingPanel">
+            <div class="eyebrow">Teacher Evaluation</div>
+            <h3>How was the response?</h3>
+
+            <div class="rating-grid">
+              <button class="rating-btn bad" onclick="selectRating('Bad', this)">Bad</button>
+              <button class="rating-btn medium" onclick="selectRating('Medium', this)">Medium</button>
+              <button class="rating-btn good" onclick="selectRating('Good', this)">Good</button>
+              <button class="rating-btn great" onclick="selectRating('Great', this)">Great</button>
+            </div>
+
+            <button class="btn primary" onclick="nextCard()">NEXT CARD →</button>
           </div>
         </div>
+
+        <div class="final" id="finalScreen">
+          <div class="eyebrow">Session Finished</div>
+          <h2 id="finalLevel">Functional</h2>
+          <p>Paulo reacted to real photography situations under pressure.</p>
+
+          <div class="summary-grid" id="summaryGrid"></div>
+          <div class="card-list" id="cardList"></div>
+
+          <button class="btn primary" onclick="resetGame()">PLAY AGAIN ✦</button>
+        </div>
       </div>
-    </div>
-  );
-}
+    </section>
+  </main>
+
+  <script>
+    const situations = [
+      { title: "Nervous Couple", text: "The couple is nervous. What do you say?" },
+      { title: "Awkward Groom", text: "The groom doesn’t know how to pose. Give him directions." },
+      { title: "Crying Bride", text: "The bride is crying. What do you say?" },
+      { title: "Awkward Couple", text: "The couple looks awkward. Help them feel natural." },
+      { title: "Distracted Child", text: "The child won’t look at the camera. What do you say?" },
+      { title: "Loud Family", text: "The family is talking too much. Take control politely." },
+      { title: "Perfect Light", text: "The light is perfect. Direct the couple quickly." },
+      { title: "Shy Husband", text: "The husband is shy. Help him relax." },
+      { title: "Romantic Pictures", text: "The couple wants romantic pictures. Direct them." }
+    ];
+
+    let started = false;
+    let paused = false;
+    let timeLeft = 10;
+    let current = 0;
+    let timer = null;
+    let results = [];
+    let currentRating = null;
+
+    function renderCard() {
+      document.getElementById("timeLeft").textContent = timeLeft;
+      document.getElementById("situationCount").textContent = `Situation ${current + 1} of ${situations.length}`;
+      document.getElementById("situationTitle").textContent = situations[current].title;
+      document.getElementById("situationText").textContent = situations[current].text;
+    }
+
+    function renderControls() {
+      const controls = document.getElementById("controls");
+
+      if (!started) {
+        controls.innerHTML = `<button class="btn primary" onclick="startRound()">START ROUND</button>`;
+        return;
+      }
+
+      controls.innerHTML = `
+        <button class="btn secondary" onclick="togglePause()">${paused ? "RESUME" : "PAUSE"}</button>
+        <button class="btn secondary" onclick="restartTimer()">RESTART TIMER</button>
+        <div class="current-card">
+          <span>Current Card</span>
+          <strong>${current + 1}/${situations.length}</strong>
+        </div>
+      `;
+    }
+
+    function startRound() {
+      started = true;
+      paused = false;
+      timeLeft = 10;
+      currentRating = null;
+      hideRating();
+      renderControls();
+      renderCard();
+      startTimer();
+    }
+
+    function startTimer() {
+      clearInterval(timer);
+
+      timer = setInterval(() => {
+        if (paused) return;
+
+        timeLeft--;
+        document.getElementById("timeLeft").textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          showRating();
+        }
+      }, 1000);
+    }
+
+    function togglePause() {
+      paused = !paused;
+      renderControls();
+    }
+
+    function restartTimer() {
+      timeLeft = 10;
+      paused = false;
+      currentRating = null;
+      hideRating();
+      renderControls();
+      renderCard();
+      startTimer();
+    }
+
+    function showRating() {
+      document.getElementById("ratingPanel").classList.add("show");
+    }
+
+    function hideRating() {
+      document.getElementById("ratingPanel").classList.remove("show");
+      document.querySelectorAll(".rating-btn").forEach(btn => btn.classList.remove("selected"));
+    }
+
+    function selectRating(rating, button) {
+      currentRating = rating;
+      document.querySelectorAll(".rating-btn").forEach(btn => btn.classList.remove("selected"));
+      button.classList.add("selected");
+    }
+
+    function nextCard() {
+      if (!currentRating) {
+        alert("Escolha Bad, Medium, Good ou Great antes de passar para o próximo card.");
+        return;
+      }
+
+      results.push(currentRating);
+
+      if (current === situations.length - 1) {
+        finishGame();
+        return;
+      }
+
+      const card = document.getElementById("situationCard");
+      card.classList.add("slide");
+
+      setTimeout(() => {
+        current++;
+        timeLeft = 10;
+        paused = false;
+        currentRating = null;
+        hideRating();
+        renderControls();
+        renderCard();
+        card.classList.remove("slide");
+        startTimer();
+      }, 230);
+    }
+
+    function ratingSummary() {
+      return {
+        Bad: results.filter(item => item === "Bad").length,
+        Medium: results.filter(item => item === "Medium").length,
+        Good: results.filter(item => item === "Good").length,
+        Great: results.filter(item => item === "Great").length
+      };
+    }
+
+    function averageLevel() {
+      const map = { Bad: 1, Medium: 2, Good: 3, Great: 4 };
+      const avg = results.reduce((acc, item) => acc + map[item], 0) / (results.length || 1);
+
+      if (avg < 1.8) return "Survival Mode";
+      if (avg < 2.7) return "Functional";
+      if (avg < 3.5) return "Natural";
+      return "Professional";
+    }
+
+    function finishGame() {
+      clearInterval(timer);
+      document.getElementById("gameContent").style.display = "none";
+      document.getElementById("finalScreen").classList.add("show");
+      document.getElementById("finalLevel").textContent = averageLevel();
+
+      const summary = ratingSummary();
+      document.getElementById("summaryGrid").innerHTML = Object.entries(summary).map(([label, count]) => `
+        <div class="summary-card">
+          <span>${label}</span>
+          <strong>${count}</strong>
+        </div>
+      `).join("");
+
+      document.getElementById("cardList").innerHTML = results.map((item, index) => `
+        <div class="mini-card">
+          <span>Card ${index + 1}</span>
+          <strong>${item}</strong>
+        </div>
+      `).join("");
+    }
+
+    function resetGame() {
+      clearInterval(timer);
+      started = false;
+      paused = false;
+      timeLeft = 10;
+      current = 0;
+      results = [];
+      currentRating = null;
+
+      document.getElementById("gameContent").style.display = "block";
+      document.getElementById("finalScreen").classList.remove("show");
+      hideRating();
+      renderControls();
+      renderCard();
+    }
+
+    renderCard();
+    renderControls();
+  </script>
+</body>
+</html>
